@@ -1,0 +1,174 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Roles {
+  ADMIN
+  CUSTOMER
+}
+
+model User {
+  id String @id @default(uuid())
+
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id])
+
+  adminId String?
+  admin   Admin?  @relation(fields: [adminId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Admin {
+  id            String    @id @default(uuid())
+  username      String    @db.VarChar(20)
+  email         String    @unique
+  passwordHash  String
+  salt          String
+  phoneNumber   String    @db.VarChar(15)
+  birthDate     DateTime? @db.Date
+  imageLocation String?
+
+  Bookstore   Bookstore? @relation(fields: [bookstoreId], references: [id])
+  bookstoreId String?
+
+  role Roles  @default(ADMIN)
+  User User[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admins")
+}
+
+model Customer {
+  id            String    @id @default(uuid())
+  username      String    @db.VarChar(20)
+  email         String    @unique
+  passwordHash  String
+  salt          String
+  phoneNumber   String    @db.VarChar(15)
+  birthDate     DateTime? @db.Date
+  imageLocation String
+
+  BookLoans BookLoan[]
+  Review    Review[]
+  Comment   Comment[]
+
+  role Roles  @default(CUSTOMER)
+  User User[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("customers")
+}
+
+model Bookstore {
+  id          String  @id @default(uuid())
+  name        String  @db.VarChar(100)
+  email       String  @unique
+  phoneNumber String  @db.VarChar(15)
+  city        String
+  cep         String? @db.VarChar(100)
+
+  admins    Admin[]
+  books     Book[]
+  bookLoans BookLoan[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("bookstores")
+}
+
+model BookLoan {
+  id String @id @default(uuid())
+
+  Bookstore   Bookstore? @relation(fields: [bookstoreId], references: [id])
+  bookstoreId String?
+
+  Book   Book?   @relation(fields: [bookId], references: [id])
+  bookId String?
+
+  Customer   Customer? @relation(fields: [customerId], references: [id])
+  customerId String?
+
+  returnDate DateTime
+  status     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("bookloans")
+}
+
+model Book {
+  id              String    @id @default(uuid())
+  title           String    @db.VarChar(200)
+  publicationDate DateTime?
+  author          String?   @db.VarChar(255)
+  genre           String?   @db.VarChar(50)
+  qrCodeId        String?   @db.VarChar(50)
+  price           Float?
+  isAvailable     Boolean   @default(true)
+
+  Bookstore   Bookstore? @relation(fields: [bookstoreId], references: [id])
+  bookstoreId String?
+
+  BookLoans BookLoan[]
+  Reviews   Review[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("books")
+}
+
+model Review {
+  id String @id @default(uuid())
+
+  Customer   Customer? @relation(fields: [customerId], references: [id])
+  customerId String?
+
+  Book   Book?   @relation(fields: [bookId], references: [id])
+  bookId String?
+
+  title         String @db.VarChar(200)
+  body          String @db.VarChar(2000)
+  imageLocation String
+
+  Comment Comment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("reviews")
+}
+
+model Comment {
+  id Int @id @default(autoincrement())
+
+  Customer   Customer? @relation(fields: [customerId], references: [id])
+  customerId String?
+
+  Reviews  Review? @relation(fields: [reviewId], references: [id])
+  reviewId String?
+
+  body String @db.VarChar(300)
+
+  createdAt DateTime @default(now())
+
+  @@map("comments")
+}
