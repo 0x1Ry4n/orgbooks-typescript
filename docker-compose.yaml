@@ -1,0 +1,59 @@
+version: '3'
+
+services:
+  postgresdb:
+    image: postgres
+    restart: unless-stopped
+    container_name: db
+    env_file: ./.env
+    environment:
+      - POSTGRES_USER=$POSTGRESDB_USER
+      - POSTGRES_PASSWORD=$POSTGRESDB_ROOT_PASSWORD
+      - POSTGRES_DB=$POSTGRESDB_DATABASE
+    ports:
+      - $POSTGRESDB_LOCAL_PORT:$POSTGRESDB_DOCKER_PORT
+    networks:
+      - api-network
+    volumes:
+      - postgresdb-volume:/var/lib/postgres
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgviewer
+    environment: 
+      - PGADMIN_DEFAULT_EMAIL=$PGADMIN_DEFAULT_EMAIL
+      - PGADMIN_DEFAULT_PASSWORD=$PGADMIN_DEFAULT_PASSWORD 
+    ports:
+      - 16546:80
+    depends_on:
+      - postgresdb
+    networks:
+      - api-network
+
+  # api:
+  #   depends_on:
+  #     - postgresdb
+  #   build: 
+        #context: .
+        #dockerfile: Dockerfile
+  #   restart: unless-stopped
+  #   env_file: ./.env
+  #   ports:
+  #     - $NODE_LOCAL_PORT:$NODE_DOCKER_PORT
+  #   environment:
+  #     - DB_HOST=postgresdb
+  #     - DB_USER=$POSTGRESDB_USER
+  #     - DB_PASSWORD=$POSTGRESDB_ROOT_PASSWORD
+  #     - DB_NAME=$POSTGRESDB_DATABASE
+  #     - DB_PORT=$POSTGRESDB_DOCKER_PORT
+  #   stdin_open: true
+  #   tty: true
+
+networks:
+  api-network:
+    driver: bridge
+
+volumes: 
+  postgresdb-volume:
+
+    
