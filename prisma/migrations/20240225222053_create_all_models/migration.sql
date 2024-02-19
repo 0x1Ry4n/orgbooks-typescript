@@ -1,29 +1,32 @@
 -- CreateEnum
-CREATE TYPE "Roles" AS ENUM ('ADMIN', 'CUSTOMER');
+CREATE TYPE "PermissionFlags" AS ENUM ('customer:create', 'customer:edit', 'customer:delete', 'customer:list', 'bookstore:create', 'bookstore:edit', 'bookstore:delete', 'bookstore:list', 'book:create', 'book:edit', 'book:delete', 'book:list', 'bookloan:create', 'bookloan:edit', 'bookloan:delete', 'bookloan:list', 'review:create', 'review:edit', 'review:delete', 'review:list', 'comment:create', 'comment:edit', 'comment:delete', 'comment:list');
+
+-- CreateEnum
+CREATE TYPE "UserType" AS ENUM ('ADMIN', 'CUSTOMER');
 
 -- CreateTable
-CREATE TABLE "users" (
+CREATE TABLE "AuthData" (
     "id" TEXT NOT NULL,
-    "customerId" TEXT,
-    "adminId" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "email" TEXT NOT NULL,
+    "passwordHash" TEXT NOT NULL,
+    "salt" TEXT NOT NULL,
+    "passwordRecoverCode" TEXT,
+    "passwordRecoverExpiration" TIMESTAMP(3),
+    "userType" "UserType" NOT NULL,
+    "permissions" "PermissionFlags"[],
 
-    CONSTRAINT "users_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "AuthData_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "admins" (
     "id" TEXT NOT NULL,
+    "authDataId" TEXT NOT NULL,
     "username" VARCHAR(20) NOT NULL,
-    "email" TEXT NOT NULL,
-    "passwordHash" TEXT NOT NULL,
-    "salt" TEXT NOT NULL,
     "phoneNumber" VARCHAR(15) NOT NULL,
     "birthDate" DATE,
     "imageLocation" TEXT,
     "bookstoreId" TEXT,
-    "role" "Roles" NOT NULL DEFAULT 'ADMIN',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -33,14 +36,11 @@ CREATE TABLE "admins" (
 -- CreateTable
 CREATE TABLE "customers" (
     "id" TEXT NOT NULL,
+    "authDataId" TEXT NOT NULL,
     "username" VARCHAR(20) NOT NULL,
-    "email" TEXT NOT NULL,
-    "passwordHash" TEXT NOT NULL,
-    "salt" TEXT NOT NULL,
     "phoneNumber" VARCHAR(15) NOT NULL,
     "birthDate" DATE,
-    "imageLocation" TEXT NOT NULL,
-    "role" "Roles" NOT NULL DEFAULT 'CUSTOMER',
+    "imageLocation" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -117,23 +117,39 @@ CREATE TABLE "comments" (
     CONSTRAINT "comments_pkey" PRIMARY KEY ("id")
 );
 
--- CreateIndex
-CREATE UNIQUE INDEX "admins_email_key" ON "admins"("email");
+-- CreateTable
+CREATE TABLE "Session" (
+    "id" TEXT NOT NULL,
+    "sid" TEXT NOT NULL,
+    "data" TEXT NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateIndex
-CREATE UNIQUE INDEX "customers_email_key" ON "customers"("email");
+CREATE UNIQUE INDEX "AuthData_email_key" ON "AuthData"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "admins_authDataId_key" ON "admins"("authDataId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "customers_authDataId_key" ON "customers"("authDataId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "bookstores_email_key" ON "bookstores"("email");
 
--- AddForeignKey
-ALTER TABLE "users" ADD CONSTRAINT "users_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+-- CreateIndex
+CREATE UNIQUE INDEX "Session_sid_key" ON "Session"("sid");
 
 -- AddForeignKey
-ALTER TABLE "users" ADD CONSTRAINT "users_adminId_fkey" FOREIGN KEY ("adminId") REFERENCES "admins"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "admins" ADD CONSTRAINT "admins_authDataId_fkey" FOREIGN KEY ("authDataId") REFERENCES "AuthData"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "admins" ADD CONSTRAINT "admins_bookstoreId_fkey" FOREIGN KEY ("bookstoreId") REFERENCES "bookstores"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "customers" ADD CONSTRAINT "customers_authDataId_fkey" FOREIGN KEY ("authDataId") REFERENCES "AuthData"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "bookloans" ADD CONSTRAINT "bookloans_bookstoreId_fkey" FOREIGN KEY ("bookstoreId") REFERENCES "bookstores"("id") ON DELETE SET NULL ON UPDATE CASCADE;

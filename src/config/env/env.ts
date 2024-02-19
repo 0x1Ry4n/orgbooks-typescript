@@ -10,6 +10,7 @@ const envSchema = z.object({
     POSTGRESDB_LOCAL_PORT: z.coerce.number().default(5432),
     POSTGRESDB_DOCKER_PORT: z.coerce.number().default(5432),
     EXPIRES_IN: z.string().default("7days"),
+    SESSION_SECRET: z.string(),
 });
 
 const envParsing = envSchema.safeParse(process.env);

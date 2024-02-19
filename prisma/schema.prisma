@@ -10,41 +10,76 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Roles {
+enum PermissionFlags {
+  ADMIN_CREATE @map("admin:create")
+  ADMIN_EDIT   @map("admin:edit")
+  ADMIN_DELETE @map("admin:delete")
+  ADMIN_LIST   @map("admin:list")
+
+  CUSTOMER_CREATE @map("customer:create")
+  CUSTOMER_EDIT   @map("customer:edit")
+  CUSTOMER_DELETE @map("customer:delete")
+  CUSTOMER_LIST   @map("customer:list")
+
+  BOOKSTORE_CREATE @map("bookstore:create")
+  BOOKSTORE_EDIT   @map("bookstore:edit")
+  BOOKSTORE_DELETE @map("bookstore:delete")
+  BOOKSTORE_LIST   @map("bookstore:list")
+
+  BOOK_CREATE @map("book:create")
+  BOOK_EDIT   @map("book:edit")
+  BOOK_DELETE @map("book:delete")
+  BOOK_LIST   @map("book:list")
+
+  BOOKLOAN_CREATE @map("bookloan:create")
+  BOOKLOAN_EDIT   @map("bookloan:edit")
+  BOOKLOAN_DELETE @map("bookloan:delete")
+  BOOKLOAN_LIST   @map("bookloan:list")
+
+  REVIEW_CREATE @map("review:create")
+  REVIEW_EDIT   @map("review:edit")
+  REVIEW_DELETE @map("review:delete")
+  REVIEW_LIST   @map("review:list")
+
+  COMMENT_CREATE @map("comment:create")
+  COMMENT_EDIT   @map("comment:edit")
+  COMMENT_DELETE @map("comment:delete")
+  COMMENT_LIST   @map("comment:list")
+}
+
+enum UserType {
   ADMIN
   CUSTOMER
 }
 
-model User {
+model AuthData {
   id String @id @default(uuid())
 
-  customerId String?
-  customer   Customer? @relation(fields: [customerId], references: [id])
+  email                     String    @unique
+  passwordHash              String
+  salt                      String
+  passwordRecoverCode       String?
+  passwordRecoverExpiration DateTime?
 
-  adminId String?
-  admin   Admin?  @relation(fields: [adminId], references: [id])
+  userType    UserType
+  permissions PermissionFlags[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("users")
+  admin    Admin?
+  customer Customer?
 }
 
 model Admin {
-  id            String    @id @default(uuid())
+  id         String   @id @default(uuid())
+  authData   AuthData @relation(fields: [authDataId], references: [id])
+  authDataId String   @unique
+
   username      String    @db.VarChar(20)
-  email         String    @unique
-  passwordHash  String
-  salt          String
   phoneNumber   String    @db.VarChar(15)
   birthDate     DateTime? @db.Date
   imageLocation String?
 
   Bookstore   Bookstore? @relation(fields: [bookstoreId], references: [id])
   bookstoreId String?
-
-  role Roles  @default(ADMIN)
-  User User[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -53,21 +88,18 @@ model Admin {
 }
 
 model Customer {
-  id            String    @id @default(uuid())
+  id         String   @id @default(uuid())
+  authData   AuthData @relation(fields: [authDataId], references: [id])
+  authDataId String   @unique
+
   username      String    @db.VarChar(20)
-  email         String    @unique
-  passwordHash  String
-  salt          String
   phoneNumber   String    @db.VarChar(15)
   birthDate     DateTime? @db.Date
-  imageLocation String
+  imageLocation String?
 
   BookLoans BookLoan[]
   Review    Review[]
   Comment   Comment[]
-
-  role Roles  @default(CUSTOMER)
-  User User[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -171,4 +203,11 @@ model Comment {
   createdAt DateTime @default(now())
 
   @@map("comments")
+}
+
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String
+  expiresAt DateTime
 }

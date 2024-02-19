@@ -1,19 +1,22 @@
 {
     "compilerOptions": {
         "incremental": true,
-        "target": "ESNext",
+        "target": "ES2022",
         "module": "commonjs",
+        "moduleDetection": "force",
         "allowJs": true,
         "checkJs": false,
         "outDir": "./dist",
         "sourceMap": true,
         "strict": true,
-        "alwaysStrict": true,
+        "strictPropertyInitialization": false,
         "moduleResolution": "node",
         "esModuleInterop": true,
         "baseUrl": ".",
+        "typeRoots": ["src/@types", "/node_modules/@types"],
         "paths": {
-            "@/*": ["./src/*", "src/swagger-output.json"],
+            "@/*": ["./src/*"],
         },
     },
+    "include": ["src", "src/**/*.ts", "tests/**/*.ts"],
 }

@@ -2,8 +2,9 @@ import { createLogger, format, transports } from "winston";
 
 const loggerFormat = format.combine(
     format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+    format.simple(),
     format.printf((info) => {
-        return `${info.timestamp} - [${info.level.toUpperCase()}]: ${info.message}`;
+        return `${info.timestamp} - [${info.level.toUpperCase()}]: ${JSON.stringify(info.message, null, "\t")}`;
     }),
     format.colorize({
         all: true,

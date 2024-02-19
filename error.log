@@ -1,0 +1,20 @@
+[31m2024-02-20 16:34:56 - [ERROR]: Cannot read properties of undefined (reading 'adminRepository')[39m
+[31m2024-02-20 16:38:49 - [ERROR]: Cannot read properties of undefined (reading 'adminRepository')[39m
+[31m2024-02-20 16:40:41 - [ERROR]: Cannot read properties of undefined (reading 'adminRepository')[39m
+[31m2024-02-20 16:41:14 - [ERROR]: Cannot read properties of undefined (reading 'adminRepository')[39m
+[31m2024-02-20 16:43:13 - [ERROR]: data and salt arguments required[39m
+[31m2024-02-20 16:44:35 - [ERROR]: data and salt arguments required[39m
+[31m2024-02-20 16:44:46 - [ERROR]: Cannot read properties of undefined (reading 'adminRepository')[39m
+[31m2024-02-20 16:45:49 - [ERROR]: Cannot read properties of undefined (reading 'adminRepository')[39m
+[31m2024-02-20 16:46:22 - [ERROR]: Cannot read properties of undefined (reading 'adminRepository')[39m
+[31m2024-02-20 16:52:02 - [ERROR]: Cannot read properties of undefined (reading 'adminRepository')[39m
+[31m2024-02-20 16:52:56 - [ERROR]: Cannot read properties of undefined (reading 'adminRepository')[39m
+[31m2024-02-21 14:22:29 - [ERROR]: [39m
+[31mInvalid `prisma.admin.create()` invocation in[39m
+[31mD:\Dev\orgbooks-typescript\src\controllers\adminController.ts:42:46[39m
+
+[31m  39 [39m
+[31m  40 logger.info(hashedPassword);[39m
+[31m  41 [39m
+[31m→ 42 const admin = await prisma.admin.create([39m
+[31mThe table `public.admins` does not exist in the current database.[39m

@@ -1,15 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import express from "express";
-import { Response } from "express";
-import { helloSchema } from "../validators/schemas";
-import { TypedRequest, validateRequest } from "../middlewares/requestValidator";
+import { Router } from "express";
+import adminRoutes from "./admin";
+import customerRoutes from "./customer";
 
-const router = express.Router();
+const router = Router();
 
-router.post("/", validateRequest(helloSchema), (req: TypedRequest<typeof helloSchema>, res: Response) => {
-    const { message } = req.body;
-
-    res.status(200).json({ message });
-});
+router.use("/admin", adminRoutes);
+router.use("/customer", customerRoutes);
 
 export default router;

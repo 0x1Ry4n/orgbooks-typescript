@@ -4,14 +4,14 @@ services:
   postgresdb:
     image: postgres
     restart: unless-stopped
-    container_name: db
+    container_name: orgbooksdb
     env_file: ./.env
     environment:
-      - POSTGRES_USER=$POSTGRESDB_USER
-      - POSTGRES_PASSWORD=$POSTGRESDB_ROOT_PASSWORD
-      - POSTGRES_DB=$POSTGRESDB_DATABASE
+      - POSTGRES_USER=${POSTGRESDB_USER}
+      - POSTGRES_PASSWORD=${POSTGRESDB_ROOT_PASSWORD}
+      - POSTGRES_DB=${POSTGRESDB_DATABASE}
     ports:
-      - $POSTGRESDB_LOCAL_PORT:$POSTGRESDB_DOCKER_PORT
+      - ${POSTGRESDB_LOCAL_PORT}:${POSTGRESDB_DOCKER_PORT}
     networks:
       - api-network
     volumes:
@@ -19,12 +19,12 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4
-    container_name: pgviewer
+    container_name: orgbookspgviewer
     environment: 
-      - PGADMIN_DEFAULT_EMAIL=$PGADMIN_DEFAULT_EMAIL
-      - PGADMIN_DEFAULT_PASSWORD=$PGADMIN_DEFAULT_PASSWORD 
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD} 
     ports:
-      - 16546:80
+      - ${PGVIEWER_LOCAL_PORT}:${PGVIEWER_DOCKER_PORT}
     depends_on:
       - postgresdb
     networks:
