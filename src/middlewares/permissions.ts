@@ -27,7 +27,10 @@ const permissionsMiddleware =
         }
 
         if (!isAuthorized) {
-            return res.status(statusCode.FORBIDDEN).send({ success: false, message: "User does not have the required permissions" });
+            return res.status(statusCode.FORBIDDEN).json({ 
+                success: false, 
+                message: "User does not have the required permissions" 
+            });
         }
 
         next();

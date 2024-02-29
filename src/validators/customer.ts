@@ -20,6 +20,10 @@ const customerUpdateSchema = z.object({
     birthDate: z.coerce.date().optional(),
 });
 
+const customerIdParamSchema = z.object({
+    id: z.string().uuid(),
+});
+
 interface SignUpRequest extends Request {
     body: z.infer<typeof customerSignUpSchema>;
 }
@@ -33,4 +37,12 @@ interface UpdateCustomerRequest extends Request {
     body: z.infer<typeof customerUpdateSchema>;
 }
 
-export { customerSignUpSchema, customerUpdateSchema, SignUpRequest, LoginRequest, UpdateCustomerRequest };
+export {
+    customerSignUpSchema, 
+    customerLoginSchema, 
+    customerUpdateSchema, 
+    customerIdParamSchema, 
+    SignUpRequest, 
+    LoginRequest, 
+    UpdateCustomerRequest 
+};

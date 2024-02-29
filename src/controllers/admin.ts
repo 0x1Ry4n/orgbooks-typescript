@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { SignUpRequest, LoginRequest, UpdateAdminRequest } from "@/validators/admin";
-import { statusCode, generateHash } from "@/utils";
+import { statusCode, generateHash, errorHandler  } from "@/utils";
 import { prisma } from "@/config/database/prisma";
-import passport from "passport";
 import logger from "@/config/logger";
+import passport from "passport";
 
 export class AdminController {
     async authLogin(req: LoginRequest, res: Response, next: NextFunction) {
@@ -25,10 +25,7 @@ export class AdminController {
                 });
             })(req, res, next);
         } catch (error) {
-            res.status(statusCode.INTERNAL_ERROR).json({
-                success: false,
-                message: error,
-            });
+            errorHandler(error, req, res);
         }
     }
 
@@ -104,10 +101,7 @@ export class AdminController {
                 });
             });
         } catch (error) {
-            res.status(statusCode.INTERNAL_ERROR).json({
-                success: false,
-                message: error,
-            });
+            errorHandler(error, req, res)
         }
     }
 
@@ -134,10 +128,7 @@ export class AdminController {
                 data: adminUpdated,
             });
         } catch (error) {
-            res.status(statusCode.INTERNAL_ERROR).json({
-                success: false,
-                message: error,
-            });
+            errorHandler(error, req, res)
         }
     }
 
@@ -162,10 +153,7 @@ export class AdminController {
                 data: adminFounded,
             });
         } catch (error) {
-            res.status(statusCode.INTERNAL_ERROR).json({
-                success: false,
-                message: error,
-            });
+            errorHandler(error, req, res)
         }
     }
 
@@ -182,10 +170,7 @@ export class AdminController {
                 data: adminDeleted,
             });
         } catch (error) {
-            res.status(statusCode.INTERNAL_ERROR).json({
-                success: false,
-                message: error,
-            });
+            errorHandler(error, req, res)
         }
     }
 }

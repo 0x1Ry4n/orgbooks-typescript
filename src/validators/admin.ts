@@ -37,4 +37,13 @@ interface UpdateAdminRequest extends Request {
     body: z.infer<typeof adminUpdateBodySchema>;
 }
 
-export { adminLoginSchema, adminSignUpSchema, adminIdParamSchema, adminUpdateBodySchema, LoginRequest, SignUpRequest, UpdateAdminRequest };
+export { 
+    adminLoginSchema, 
+    adminSignUpSchema, 
+    adminIdParamSchema, 
+    adminUpdateBodySchema, 
+    LoginRequest, 
+    SignUpRequest, 
+    UpdateAdminRequest 
+};
+

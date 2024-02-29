@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { statusCode, generateHash } from "@/utils";
+import { statusCode, generateHash, errorHandler } from "@/utils";
 import { SignUpRequest, LoginRequest, UpdateCustomerRequest } from "@/validators/customer";
 import { prisma } from "@/config/database/prisma";
 import passport from "passport";
@@ -23,10 +23,7 @@ export class CustomerController {
                 });
             })(req, res, next);
         } catch (error) {
-            res.status(statusCode.INTERNAL_ERROR).json({
-                success: false,
-                message: error,
-            });
+            errorHandler(error, req, res)
         }
     }
 
@@ -94,7 +91,7 @@ export class CustomerController {
                     permissions: customer.authData.permissions,
                 },
                 (err) => {
-                    if (err) return res.status(statusCode.INTERNAL_ERROR).json({ success: false, message: err });
+                    if (err) errorHandler(err, req, res)
 
                     return res.status(statusCode.CREATED).send({
                         success: true,
@@ -103,10 +100,7 @@ export class CustomerController {
                 },
             );
         } catch (error) {
-            res.status(statusCode.INTERNAL_ERROR).json({
-                success: false,
-                message: error,
-            });
+            errorHandler(error, req, res)
         }
     }
 
@@ -129,10 +123,7 @@ export class CustomerController {
                 data: updatedCustomer,
             });
         } catch (error) {
-            res.status(statusCode.INTERNAL_ERROR).json({
-                success: false,
-                message: error,
-            });
+            errorHandler(error, req, res)
         }
     }
 
@@ -149,10 +140,7 @@ export class CustomerController {
                 data: customer,
             });
         } catch (error) {
-            res.status(statusCode.INTERNAL_ERROR).json({
-                success: false,
-                message: error,
-            });
+            errorHandler(error, req, res)
         }
     }
 
@@ -169,10 +157,7 @@ export class CustomerController {
                 data: customer,
             });
         } catch (error) {
-            res.status(statusCode.INTERNAL_ERROR).json({
-                success: false,
-                message: error,
-            });
+            errorHandler(error, req, res)
         }
     }
 }
